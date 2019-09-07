@@ -1,13 +1,13 @@
 //
-//  PostViewModel.swift
+//  CommentsTitleViewModel.swift
 //  Posts
 //
-//  Created by Andrey Lebedev on 05/09/2019.
+//  Created by Andrey Lebedev on 15/09/2019.
 //  Copyright © 2019 andrey. All rights reserved.
 //
 
 import Foundation
 
-struct PostViewModel {
+struct CommentsTitleViewModel {
 	let title: String?
 }

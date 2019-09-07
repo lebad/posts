@@ -10,5 +10,8 @@ import Foundation
 
 protocol PostsViewInput: AnyObject {
 	
-	
+	func show(posts: [PostViewModel])
+	func show(screenTitle: String)
+	func show(errorMessage: String)
+	func show(warningMessage: String)
 }
