@@ -10,7 +10,16 @@ import UIKit
 
 class PostDetailViewController: UIViewController {
 	
-	var output: PostDetailPresenter!
+	var output: PostDetailPresenter
+	
+	init(output: PostDetailPresenter) {
+		self.output = output
+		super.init(nibName: nil, bundle: nil)
+	}
+	
+	required init?(coder aDecoder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
 	
 	private lazy var infoTableView: TableView = {
 		let tableView = TableView(frame: .zero)

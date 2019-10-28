@@ -10,11 +10,16 @@ import Foundation
 
 class PostsPresenter {
 	
-	weak var view: PostsViewInput!
-	var output: PostsPresenterOutput!
-	var loader: LoaderShowable!
+	weak var view: PostsViewInput?
+	weak var loader: LoaderShowable?
+	
+	private var output: PostsPresenterOutput
 	
 	private var posts = [Post]()
+	
+	init(output: PostsPresenterOutput) {
+		self.output = output
+	}
 	
 	func didChoose(postAtIndex:Int) {
 		let post = posts[postAtIndex]
@@ -23,12 +28,13 @@ class PostsPresenter {
 }
 
 extension PostsPresenter: PresenterConfigurable {
+	
 	func configure() {
 		
-		loader.startLoading()
+		loader?.startLoading()
 		output.didPostsPresenterConfigure()
 		
-		view.show(screenTitle: "Posts")
+		view?.show(screenTitle: "Posts")
 	}
 }
 
@@ -37,17 +43,17 @@ extension PostsPresenter: PostsPresentable {
 	func present(_ posts: [Post]) {
 		self.posts = posts
 		let postViewModels = self.posts.map { PostViewModel(title: $0.title) }
-		view.show(posts: postViewModels)
+		view?.show(posts: postViewModels)
 	}
 }
 
 extension PostsPresenter: ErrorPresentable {
 	
 	func present(errorMessage: String) {
-		view.show(errorMessage: errorMessage)
+		view?.show(errorMessage: errorMessage)
 	}
 	
 	func present(warningMessage: String) {
-		view.show(warningMessage: warningMessage)
+		view?.show(warningMessage: warningMessage)
 	}
 }

@@ -10,13 +10,17 @@ import Foundation
 
 class PostsFlowCoordinator {
 	
-	var interactor: PostsInteractorInput!
-	var router: PostsRouter!
-	
-	weak var postsPresentable: PostsPresentable!
-	weak var errorPresentable: ErrorPresentable!
-	
+	weak var postsPresentable: PostsPresentable?
+	weak var errorPresentable: ErrorPresentable?
 	weak var postDetailPresenter: PostDetailPresenterInput?
+	
+	private var interactor: PostsInteractorInput
+	private var router: PostsRouter
+	
+	init(interactor: PostsInteractorInput, router: PostsRouter) {
+		self.interactor = interactor
+		self.router = router
+	}
 }
 
 extension PostsFlowCoordinator: Coordinator {
@@ -44,7 +48,7 @@ extension PostsFlowCoordinator: PostsPresenterOutput {
 extension PostsFlowCoordinator: PostsInteractorOutput {
 	
 	func didReceive(_ posts: [Post]) {
-		postsPresentable.present(posts)
+		postsPresentable?.present(posts)
 	}
 	
 	func didReceive(_ user: User) {
@@ -56,10 +60,10 @@ extension PostsFlowCoordinator: PostsInteractorOutput {
 	}
 	
 	func didReceive(errorMessage: String) {
-		errorPresentable.present(errorMessage:errorMessage)
+		errorPresentable?.present(errorMessage:errorMessage)
 	}
 	
 	func didReceive(warningMessage: String) {
-		errorPresentable.present(warningMessage:warningMessage)
+		errorPresentable?.present(warningMessage:warningMessage)
 	}
 }

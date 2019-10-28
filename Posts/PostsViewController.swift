@@ -10,7 +10,16 @@ import UIKit
 
 class PostsViewController: UIViewController {
 	
-	var output: PostsPresenter!
+	private var output: PostsPresenter
+	
+	init(output: PostsPresenter) {
+		self.output = output
+		super.init(nibName: nil, bundle: nil)
+	}
+	
+	required init?(coder aDecoder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
 	
 	private lazy var tableView: TableView = {
 		let tableView = TableView(frame: .zero)

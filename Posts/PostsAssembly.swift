@@ -13,36 +13,40 @@ class PostsAssembly {
 	private weak var coordinator: PostsFlowCoordinator?
 	
 	func flowCoordinator(_ window: UIWindow) -> Coordinator {
-		let flowCoordninator = PostsFlowCoordinator()
-		let router = PostsRouter(window, assembly: self)
-		flowCoordninator.router = router
-		self.coordinator = flowCoordninator
 		
-		flowCoordninator.interactor = assembleAsyncResolver()
+		let router = PostsRouter(window: window, assembly: self)
+		let asyncResolver = assembleAsyncResolver()
 		
-		return flowCoordninator
+		let coordinator = PostsFlowCoordinator(interactor: asyncResolver, router: router)
+		self.coordinator = coordinator
+		asyncResolver.output = coordinator
+		
+		return coordinator
 	}
 	
 	func postsViewController() -> UIViewController {
-		let viewController = PostsViewController()
-		let presenter = PostsPresenter()
 		
-		viewController.output = presenter
+		guard let coordinator = self.coordinator else {
+			fatalError()
+		}
+		
+		let presenter = PostsPresenter(output: coordinator)
+		let viewController = PostsViewController(output: presenter)
+		
 		presenter.view = viewController
 		presenter.loader = viewController
 		
-		presenter.output = coordinator
-		coordinator?.postsPresentable = presenter
-		coordinator?.errorPresentable = presenter
+		coordinator.postsPresentable = presenter
+		coordinator.errorPresentable = presenter
 		
 		return viewController
 	}
 	
 	func postInfoViewController() -> UIViewController {
-		let viewConrtroller = PostDetailViewController()
-		let presenter = PostDetailPresenter()
 		
-		viewConrtroller.output = presenter
+		let presenter = PostDetailPresenter()
+		let viewConrtroller = PostDetailViewController(output: presenter)
+		
 		presenter.view = viewConrtroller
 		presenter.loader = viewConrtroller
 		
@@ -54,28 +58,25 @@ class PostsAssembly {
 	
 	private func assembleAsyncResolver() -> AsyncResolver {
 		
-		let interactor = PostsInteractor()
-		
-		let asyncResolver = AsyncResolver()
-		asyncResolver.interactor = interactor
-		asyncResolver.output = coordinator
+		let reachabilityService = ReachabilityServiceImpl()
 		
 		let serverAPI = ServerAPI()
 		let remotePostsService = RemotePostsServiceImpl(serverAPI: serverAPI)
-		interactor.postRemoteService = remotePostsService
 		
 		let coreDataAPI = CoreDataAPI()
-		let localRemoteService = LocalPostsServiceImpl(coreDataAPI)
-		interactor.postLocalService = localRemoteService
+		let localRemoteService = LocalPostsServiceImpl(coreDataAPI: coreDataAPI)
 		
 		let remoteUserService = RemoteUserService(serverAPI: serverAPI)
-		interactor.userService = remoteUserService
 		
 		let remoteCommentsService = RemoteCommentsService(serverAPI: serverAPI)
-		interactor.commentsService = remoteCommentsService
 		
-		let reachabilityService = ReachabilityServiceImpl()
-		interactor.reachabilityService = reachabilityService
+		let interactor = PostsInteractor(reachabilityService: reachabilityService,
+										 postRemoteService: remotePostsService,
+										 postLocalService: localRemoteService,
+										 userService: remoteUserService,
+										 commentsService: remoteCommentsService)
+		
+		let asyncResolver = AsyncResolver(interactor: interactor)
 		
 		interactor.output = asyncResolver
 		

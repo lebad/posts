@@ -53,7 +53,7 @@ class ServerAPI {
 		var error: Error?
 		
 		dataTask?.cancel()
-		let semaphore = DispatchSemaphore(value: 0);
+		let semaphore = DispatchSemaphore(value: 0)
 		self.dataTask = URLSession.shared.dataTask(with: finalURL) {
 			data = $0
 			response = $1

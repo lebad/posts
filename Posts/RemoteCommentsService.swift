@@ -10,7 +10,7 @@ import Foundation
 
 class RemoteCommentsService: CommentsService {
 	
-	let serverAPI: ServerAPI
+	private let serverAPI: ServerAPI
 	
 	init(serverAPI: ServerAPI) {
 		self.serverAPI = serverAPI

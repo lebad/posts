@@ -10,8 +10,12 @@ import Foundation
 
 class AsyncResolver: PostsInteractorInput {
 	
-	var interactor: PostsInteractorInput!
-	weak var output: PostsInteractorOutput!
+	weak var output: PostsInteractorOutput?
+	private var interactor: PostsInteractorInput
+	
+	init(interactor: PostsInteractorInput) {
+		self.interactor = interactor
+	}
 	
 	func executePosts() {
 		DispatchQueue.global(qos: .background).async {
@@ -30,31 +34,31 @@ extension AsyncResolver: PostsInteractorOutput {
 	
 	func didReceive(_ posts: [Post]) {
 		DispatchQueue.main.async {
-			self.output.didReceive(posts)
+			self.output?.didReceive(posts)
 		}
 	}
 	
 	func didReceive(errorMessage: String) {
 		DispatchQueue.main.async {
-			self.output.didReceive(errorMessage:errorMessage)
+			self.output?.didReceive(errorMessage:errorMessage)
 		}
 	}
 	
 	func didReceive(warningMessage: String) {
 		DispatchQueue.main.async {
-			self.output.didReceive(warningMessage: warningMessage)
+			self.output?.didReceive(warningMessage: warningMessage)
 		}
 	}
 	
 	func didReceive(_ user: User) {
 		DispatchQueue.main.async {
-			self.output.didReceive(user)
+			self.output?.didReceive(user)
 		}
 	}
 	
 	func didReceive(_ comments: [Comment]) {
 		DispatchQueue.main.async {
-			self.output.didReceive(comments)
+			self.output?.didReceive(comments)
 		}
 	}
 }

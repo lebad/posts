@@ -10,13 +10,25 @@ import Foundation
 
 class PostsInteractor {
 	
-	weak var output: PostsInteractorOutput!
+	weak var output: PostsInteractorOutput?
 	
-	var reachabilityService: ReachabiltyService!
-	var postRemoteService: PostService!
-	var postLocalService: PostService!
-	var userService: UserService!
-	var commentsService: CommentsService!
+	private var reachabilityService: ReachabiltyService
+	private var postRemoteService: PostService
+	private var postLocalService: PostService
+	private var userService: UserService
+	private var commentsService: CommentsService
+	
+	init(reachabilityService: ReachabiltyService,
+		 postRemoteService: PostService,
+		 postLocalService: PostService,
+		 userService: UserService,
+		 commentsService: CommentsService) {
+		self.reachabilityService = reachabilityService
+		self.postRemoteService = postRemoteService
+		self.postLocalService = postLocalService
+		self.userService = userService
+		self.commentsService = commentsService
+	}
 }
 
 extension PostsInteractor: PostsInteractorInput {
@@ -35,11 +47,11 @@ extension PostsInteractor: PostsInteractorInput {
 		do {
 			if let userId = post.userID,
 				let user = try userService.getUserFor(id: userId) {
-				output.didReceive(user)
+				output?.didReceive(user)
 			}
 			if let postId = post.id {
 				let comments = try commentsService.getComments(postId: postId)
-				output.didReceive(comments)
+				output?.didReceive(comments)
 			}
 		}
 		catch (let error) {
@@ -51,13 +63,13 @@ extension PostsInteractor: PostsInteractorInput {
 		do {
 			let posts = try postLocalService.getAllPosts()
 			guard !posts.isEmpty else {
-				output.didReceive(warningMessage:"Sorry. Unfortunately there is no internet connection and local stored data")
+				output?.didReceive(warningMessage:"Sorry. Unfortunately there is no internet connection and local stored data")
 				return
 			}
-			output.didReceive(posts)
+			output?.didReceive(posts)
 		}
 		catch (let error) {
-			output.didReceive(errorMessage:error.localizedDescription)
+			output?.didReceive(errorMessage:error.localizedDescription)
 		}
 	}
 	
@@ -65,10 +77,10 @@ extension PostsInteractor: PostsInteractorInput {
 		do {
 			let posts = try postRemoteService.getAllPosts()
 			try postLocalService.update(posts)
-			output.didReceive(posts)
+			output?.didReceive(posts)
 		}
 		catch (let error) {
-			output.didReceive(errorMessage:error.localizedDescription)
+			output?.didReceive(errorMessage:error.localizedDescription)
 		}
 	}
 }

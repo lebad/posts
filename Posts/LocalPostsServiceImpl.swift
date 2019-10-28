@@ -10,9 +10,10 @@ import Foundation
 import CoreData
 
 class LocalPostsServiceImpl {
-	let coreDataAPI: CoreDataAPI
 	
-	init(_ coreDataAPI: CoreDataAPI) {
+	private let coreDataAPI: CoreDataAPI
+	
+	init(coreDataAPI: CoreDataAPI) {
 		self.coreDataAPI = coreDataAPI
 	}
 }

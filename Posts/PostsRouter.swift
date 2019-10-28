@@ -15,7 +15,7 @@ class PostsRouter {
 	private weak var navVC: UINavigationController?
 	private var postInfoVC: UIViewController?
 	
-	init(_ window: UIWindow, assembly: PostsAssembly) {
+	init(window: UIWindow, assembly: PostsAssembly) {
 		self.window = window
 		self.assembly = assembly
 	}

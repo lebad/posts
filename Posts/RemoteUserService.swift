@@ -10,7 +10,7 @@ import Foundation
 
 class RemoteUserService: UserService {
 	
-	let serverAPI: ServerAPI
+	private var serverAPI: ServerAPI
 	
 	init(serverAPI: ServerAPI) {
 		self.serverAPI = serverAPI
