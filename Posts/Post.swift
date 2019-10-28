@@ -8,11 +8,14 @@
 
 import Foundation
 
-struct Post: Equatable {
-	var id: Int?
-	var userID: Int?
-	var title: String?
-	var body: String?
+struct Post {
+	var id: Int
+	var userID: Int
+	var title: String
+	var body: String
+}
+
+extension Post: Equatable {
 	
 	static func == (lhs: Post, rhs: Post) -> Bool {
 		return lhs.id == rhs.id && lhs.userID == rhs.userID && lhs.title == rhs.title && lhs.body == rhs.body

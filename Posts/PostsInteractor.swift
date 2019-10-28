@@ -45,14 +45,11 @@ extension PostsInteractor: PostsInteractorInput {
 	
 	func executePostInfo(post: Post) {
 		do {
-			if let userId = post.userID,
-				let user = try userService.getUserFor(id: userId) {
+			if let user = try userService.getUserFor(id: post.userID) {
 				output?.didReceive(user)
 			}
-			if let postId = post.id {
-				let comments = try commentsService.getComments(postId: postId)
-				output?.didReceive(comments)
-			}
+			let comments = try commentsService.getComments(postId: post.id)
+			output?.didReceive(comments)
 		}
 		catch (let error) {
 			print("Post info error occured \(error)")

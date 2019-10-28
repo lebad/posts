@@ -14,6 +14,14 @@ protocol MOInitializable {
 	static var sortKey: String { get }
 }
 
+protocol MOConstructable {
+	static var constructableEntityName: String { get }
+	static var constructableMOtype: NSManagedObject.Type { get }
+	var predicateFormat: String { get }
+	func createMOFrom(context: NSManagedObjectContext) -> NSManagedObject
+	func update(mo: inout NSManagedObject)
+}
+
 class CoreDataAPI {
 	
 	var persistentContainer: NSPersistentContainer
@@ -54,7 +62,7 @@ class CoreDataAPI {
 		return items
 	}
 	
-	func update(_ items: [Post]) throws {
+	func update<T>(items: [T]) throws where T: MOConstructable {
 		
 		var postError: Error?
 		
@@ -62,31 +70,23 @@ class CoreDataAPI {
 		dispatchGroup.enter()
 		persistentContainer.performBackgroundTask { context in
 			
-			for item in items where item.id != nil {
+			for item in items {
 				
-				let fetchRequest = NSFetchRequest<MOPost>(entityName: "MOPost")
-				let predicate = NSPredicate(format: "id == \(item.id!)")
+				let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: T.constructableEntityName)
+				let predicate = NSPredicate(format: item.predicateFormat)
 				fetchRequest.predicate = predicate
 				let moitems = try! context.fetch(fetchRequest)
 				
 				// create new item
 				if moitems.isEmpty {
-					let post = NSEntityDescription.insertNewObject(forEntityName: "MOPost", into: context) as! MOPost
-					post.id = Int16(item.id!)
-					post.title = item.title
-					post.body = item.body
-					if let userId = item.userID {
-						post.userId = Int16(userId)
-					}
+					let _ = item.createMOFrom(context: context)
 				}
 				// update item
 				else {
-					let post = moitems.first!
-					post.title = item.title
-					post.body = item.body
-					if let userId = item.userID {
-						post.userId = Int16(userId)
+					guard var moitem = moitems.first else {
+						continue
 					}
+					item.update(mo: &moitem)
 				}
 				
 				do {

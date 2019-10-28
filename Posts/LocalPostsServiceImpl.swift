@@ -26,7 +26,7 @@ extension LocalPostsServiceImpl: PostService {
 	}
 	
 	func update(_ posts: [Post]) throws {
-		try coreDataAPI.update(posts)
+		try coreDataAPI.update(items: posts)
 	}
 }
 
@@ -37,30 +37,58 @@ extension Post: MOInitializable {
 			fatalError()
 		}
 		id = Int(mopost.id)
-		userID = nil
 		if let userId = mopost.user?.id {
 			userID = Int(userId)
+		} else {
+			userID = -1
 		}
-		title = mopost.title
-		body = mopost.body
+		
+		title = mopost.title ?? ""
+		body = mopost.body ?? ""
 	}
 	
 	static var sortKey: String {
-		get {
-			return "id"
-		}
+		return "id"
 	}
 	
 	static var entityName: String {
-		get {
-			let cell = motype
-			return String(describing: cell)
-		}
+		let cell = motype
+		return String(describing: cell)
 	}
 	
 	static var motype: NSManagedObject.Type {
-		get {
-			return MOPost.self
-		}
+		return MOPost.self
+	}
+}
+
+extension Post: MOConstructable {
+	
+	static var constructableEntityName: String {
+		let cell = motype
+		return String(describing: cell)
+	}
+	
+	static var constructableMOtype: NSManagedObject.Type {
+		return MOPost.self
+	}
+	
+	var predicateFormat: String {
+		return "id == \(self.id)"
+	}
+	
+	func createMOFrom(context: NSManagedObjectContext) -> NSManagedObject {
+		let post = NSEntityDescription.insertNewObject(forEntityName: "MOPost", into: context) as! MOPost
+		post.id = Int16(self.id)
+		post.title = self.title
+		post.body = self.body
+		post.userId = Int16(self.userID)
+		return post
+	}
+	
+	func update(mo: inout NSManagedObject) {
+		let managedObject = mo as! MOPost
+		managedObject.title = self.title
+		managedObject.body = self.body
+		managedObject.userId = Int16(self.userID)
 	}
 }

@@ -32,9 +32,9 @@ extension RemotePostsServiceImpl: PostService {
 extension Post: JsonConvertable {
 	
 	init(json: [String: Any]) {
-		userID = json["userId"] as? Int
-		id = json["id"] as? Int
-		title = json["title"] as? String
-		body = json["body"] as? String
+		userID = json["userId"] as? Int ?? -1
+		id = json["id"] as? Int ?? -1
+		title = json["title"] as? String ?? ""
+		body = json["body"] as? String ?? ""
 	}
 }
